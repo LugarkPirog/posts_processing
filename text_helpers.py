@@ -7,6 +7,7 @@ import collections
 import numpy as np
 import requests
 import gzip
+import pymorphy2
 
 # Normalize text
 def normalize_text(texts, stops):
@@ -31,8 +32,9 @@ def normalize_text(texts, stops):
     # Trim extra whitespace
     texts = [' '.join(x.split()) for x in texts]
 
-    # Deleting words w/ less than 2 letters
-    texts = [''.join(c for c in x if len(x) > 1) for x in texts]
+    # Morph Analyzer
+    morph = pymorphy2.MorphAnalyzer()
+    texts = [' '.join(morph.parse(x)[0].normal_form for x in y.split()) for y in texts]
 
     return(texts)
 
