@@ -12,7 +12,7 @@ window_size = 2
 batch_size = 30
 
 
-if os.path.isfile('data.csv'):
+if not os.path.isfile('data.csv'):
     # with openpyxl.load_workbook('train_probiv.xlsx', read_only=True, data_only=True, keep_links=False) as f:
     #     for line in f:
     #         print(line)
@@ -20,19 +20,22 @@ if os.path.isfile('data.csv'):
                       skip_blank_lines=True).values.astype('str')
     posts = raw[:, 3]
     stops = nltk.corpus.stopwords.words('russian')
-    stops.extend(['что', 'это', 'так', 'вот', 'быть', 'как', 'в', 'р', 'на'])
-    print(posts)
+    stops.extend(['что', 'это', 'так', 'вот', 'быть', 'как', 'в', 'р', 'на', 'новым', 'годом', 'поздравляем'])
+    # print(posts)
     data = text_helpers.normalize_text(posts, stops)
-    print(data)
+    # print(data)
     pd.DataFrame(data).to_csv('data.csv', sep=',', encoding='utf-8', header=False, index=False)
     # data = pd.DataFrame(data).astype('str')
 else:
     data = pd.read_csv('data.csv').values.astype('str')
 
+print(type(data))
 word_dict = text_helpers.build_dictionary(data, vocabulary_size)
 
 numeric_txt = text_helpers.text_to_numbers(data, word_dict)
+
 valid_examples = [word_dict[x] for x in valid_words]
-print(valid_examples)
+valid_w_dict = {valid_words[x]: valid_examples[x] for x in range(len(valid_examples))}
+print(valid_w_dict)
 
 
