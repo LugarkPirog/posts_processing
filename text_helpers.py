@@ -18,7 +18,7 @@ def normalize_text(texts, stops, morph=True, del_eng=True):
     texts = [''.join(c for c in x if c not in string.punctuation) for x in texts]
 
     # Remove numbers
-    texts = [''.join(c for c in x if c not in '0123456789•') for x in texts]
+    texts = [''.join(c for c in x if c not in '0123456789•-') for x in texts]
 
     # Remove stopwords
     texts = [' '.join([word for word in x.split() if word not in (stops)]) for x in texts]
@@ -77,7 +77,25 @@ def text_to_numbers(sentences, word_dict):
             sentence_data.append(word_ix)
         data.append(sentence_data)
     return(data)
-    
+
+
+def tf_idf(word_dict, numeric_txt):
+    tf_idf1 = [[]]
+    for x in word_dict:
+        flag_c = 0
+        count = 0
+        for sentence in numeric_txt:
+            flag = False
+            for word in sentence:
+                if word == word_dict[x]:
+                    count += 1
+                    flag = True
+                    print([x, flag_c])
+            flag_c += 1*flag
+        tf_idf1.append([count, flag_c])
+    answer = [a*np.log(1./b) for a, b in tf_idf1]
+    return answer
+
 
 # Generate data randomly (N words behind, target, N words ahead)
 def generate_batch_data(sentences, batch_size, window_size, method='skip_gram'):
@@ -125,46 +143,3 @@ def generate_batch_data(sentences, batch_size, window_size, method='skip_gram'):
     label_data = np.transpose(np.array([label_data]))
     
     return(batch_data, label_data)
-    
-    
-# Load the movie review data
-# Check if data was downloaded, otherwise download it and save for future use
-def load_movie_data():
-    save_folder_name = 'temp'
-    pos_file = os.path.join(save_folder_name, 'rt-polaritydata', 'rt-polarity.pos')
-    neg_file = os.path.join(save_folder_name, 'rt-polaritydata', 'rt-polarity.neg')
-
-    # Check if files are already downloaded
-    if not os.path.exists(os.path.join(save_folder_name, 'rt-polaritydata')):
-        movie_data_url = 'http://www.cs.cornell.edu/people/pabo/movie-review-data/rt-polaritydata.tar.gz'
-
-        # Save tar.gz file
-        req = requests.get(movie_data_url, stream=True)
-        with open('temp_movie_review_temp.tar.gz', 'wb') as f:
-            for chunk in req.iter_content(chunk_size=1024):
-                if chunk:
-                    f.write(chunk)
-                    f.flush()
-        # Extract tar.gz file into temp folder
-        tar = tarfile.open('temp_movie_review_temp.tar.gz', "r:gz")
-        tar.extractall(path='temp')
-        tar.close()
-
-    pos_data = []
-    with open(pos_file, 'r', encoding='latin-1') as f:
-        for line in f:
-            pos_data.append(line.encode('ascii',errors='ignore').decode())
-    f.close()
-    pos_data = [x.rstrip() for x in pos_data]
-
-    neg_data = []
-    with open(neg_file, 'r', encoding='latin-1') as f:
-        for line in f:
-            neg_data.append(line.encode('ascii',errors='ignore').decode())
-    f.close()
-    neg_data = [x.rstrip() for x in neg_data]
-    
-    texts = pos_data + neg_data
-    target = [1]*len(pos_data) + [0]*len(neg_data)
-    
-    return(texts, target)
