@@ -22,7 +22,7 @@ if not os.path.isfile('data.csv'):
     stops = nltk.corpus.stopwords.words('russian')
     stops.extend(['что', 'это', 'так', 'вот', 'быть', 'как', 'в', 'р', 'на', 'новым', 'годом', 'поздравляем'])
     # print(posts)
-    data = text_helpers.normalize_text(posts, stops)
+    data = text_helpers.normalize_text(posts, stops, morph='False')
     # print(data)
     pd.DataFrame(data).to_csv('data.csv', sep=',', encoding='utf-8', header=False, index=False)
     # data = pd.DataFrame(data).astype('str')

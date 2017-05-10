@@ -10,7 +10,7 @@ import gzip
 import pymorphy2
 
 # Normalize text
-def normalize_text(texts, stops):
+def normalize_text(texts, stops, morph='True'):
     # Lower case
     texts = [x.lower() for x in texts]
 
@@ -32,9 +32,10 @@ def normalize_text(texts, stops):
     # Trim extra whitespace
     texts = [' '.join(x.split()) for x in texts]
 
-    # Morph Analyzer
-    morph = pymorphy2.MorphAnalyzer()
-    texts = [' '.join(morph.parse(x)[0].normal_form for x in y.split()) for y in texts]
+    if morph:
+        # Morph Analyzer
+        morph = pymorphy2.MorphAnalyzer()
+        texts = [' '.join(morph.parse(x)[0].normal_form for x in y.split()) for y in texts]
 
     return(texts)
 
