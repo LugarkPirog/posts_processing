@@ -10,7 +10,7 @@ import gzip
 import pymorphy2
 
 # Normalize text
-def normalize_text(texts, stops, morph='True'):
+def normalize_text(texts, stops, morph=True, del_eng=True):
     # Lower case
     texts = [x.lower() for x in texts]
 
@@ -22,9 +22,9 @@ def normalize_text(texts, stops, morph='True'):
 
     # Remove stopwords
     texts = [' '.join([word for word in x.split() if word not in (stops)]) for x in texts]
-
-    # And delete english letters
-    texts = [''.join(x for x in c if x not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') for c in texts]
+    if del_eng:
+        # And delete english letters
+        texts = [''.join(x for x in c if x not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') for c in texts]
 
     # Choosing only sentences w/ 3 or more words
     texts = [x for x in texts if len(x.split()) > 2]
